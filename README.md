@@ -3,7 +3,11 @@ This repo contains solutions for the Capture The Ether challenges. There are ple
 
 The `hardhat.config.js` file has a template for ropsten network interaction.
 
-## Call Me/Set Nickname
+[Challenges Call Me/ Set Nickname;](#call-meset-nickname)
+
+## WARMUP
+
+### Call Me/Set Nickname
 Call Me and Set Nickname are very similar, so there is only code for the more complex one - Set Nickname. 
 In the code. you will find the script `setNickname.js`. The code has comments explaining what each line does. Still, here is what we need to do:
 1. Get the contract abi and address;
