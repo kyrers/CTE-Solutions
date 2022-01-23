@@ -4,6 +4,7 @@ This repo contains solutions for the Capture The Ether challenges. There are ple
 The `hardhat.config.js` file has a template for ropsten network interaction.
 
 [Warmup challenges;](#warmup)
+
 [Lottery challenges;](#lottery)
 
 ## WARMUP
