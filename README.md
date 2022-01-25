@@ -30,3 +30,13 @@ In the code, you will find the script `guessTheNumber.js`. The code has comments
 
 So, to solve this challenge just add the required information to the code and run `npx hardhat run scripts/lottery/guessTheNumber.js --network ropsten`.
 
+### Guess the Secret Number
+This is almost equal to the previous challenge.
+In the code, you will find the script `guessTheSecretNumber.js`. The code has comments explaining what each line does. Still, here is what we need to do:
+1. Do step 1 and 2 from the previous challenge;
+2. This time we only have the hash of the number we need to send to the `guess()` function. We need to figure out the number by running an loop, hashing the current loop counter value and then check if the hash matches. You probably saw that the `guess()` function takes an `uint8` as a parameter. This tells us that the number is less than 256, because the `uint8` max value is `2⁸-1 = 255`;
+3. When we have the correct number, we just need to call the `guess()` function and send 1 ETH to it again.
+
+So, to solve this challenge just add the required information to the code and run `npx hardhat run scripts/lottery/guessTheSecretNumber.js --network ropsten`.
+
+
