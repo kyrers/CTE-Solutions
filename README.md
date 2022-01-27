@@ -49,12 +49,12 @@ These last two option allow us to interact with the contract. Option 2 is the ea
 As always, the code has comments explaining what each line does. Still, here is what's needed for each solution:
 1. Do step 1 and 2 from the previous challenge;
 
-Solution 2:
+**Solution 2:**
 
 2. Get the value from position 0 of the contract storage and convert it to uint8;
 3. When we have the correct number, we just need to call the `guess()` function and send 1 ETH to it again.
 
-Solution 3:
+**Solution 3:**
 
 2. We need the hash of the contract creation transaction, which we can get from Etherscan.
 3. Get the contract creation transaction itself using the hash;
