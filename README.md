@@ -76,4 +76,4 @@ Once again, the code is commented and explained. Still, here are the steps neede
 4. Call the withdraw function to get your ETH back;
 
 So, to solve this challange first run `npx hardhat compile` to compile the contract. Then, add the required information to the code and run
-`npx hardhat run scripts/lottery/guessTheNewNumber.js --network ropsten`
+`npx hardhat run scripts/lottery/guessTheNewNumber.js --network ropsten`.
