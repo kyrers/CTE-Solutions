@@ -68,7 +68,7 @@ So, to solve this challenge just add the required information to the code and ru
 
 ### Guess the New Number
 This challenge gets a little bit trickier because the answer is calculated when we call the guess function.
-One approach to solve this challenge is to create a contract that computes the answer and call the challenge guess function in the same block. This way, our answer is always correct. You will find the contract in `contracts/guessTheNewNumberSolver.sol`.
+One approach to solve this challenge is to create a contract that computes the answer and call the challenge `guess()` function in the same block. This way, our answer is always correct. You will find the contract in `contracts/guessTheNewNumberSolver.sol`.
 Once again, the code is commented and explained. Still, here are the steps needed:
 1. Look at the contract and understand what it is doing. The contract has comments explaining everything.
 2. We need to deploy the contract. User your account so you can get your ETH back later, after solving the challenge;
