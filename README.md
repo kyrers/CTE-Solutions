@@ -62,8 +62,18 @@ As always, the code has comments explaining what each line does. Still, here is 
 5. Get the block parent hash and block timestamp. If you look at the code, you'll notice that `block.blockhash(block.number - 1)` - that's why we get the parent hash of the block the transaction was included in;
 6. Compute the hash using the above values;
 7. Get the last byte of the hash, because the solution is an `uint8`, and convert it to number.
-3. When we have the correct number, we just need to call the `guess()` function and send 1 ETH to it again.
+8. When we have the correct number, we just need to call the `guess()` function and send 1 ETH to it again.
 
 So, to solve this challenge just add the required information to the code and run `npx hardhat run scripts/lottery/guessTheRandomNumber.js --network ropsten`.
 
+### Guess the New Number
+This challenge gets a little bit trickier because the answer is calculated when we call the guess function.
+One approach to solve this challenge is to create a contract that computes the answer and call the challenge guess function in the same block. This way, our answer is always correct. You will find the contract in `contracts/guessTheNewNumberSolver.sol`.
+Once again, the code is commented and explained. Still, here are the steps needed:
+1. Look at the contract and understand what it is doing. The contract has comments explaining everything.
+2. We need to deploy the contract. User your account so you can get your ETH back later, after solving the challenge;
+3. Call the `guess()` function of the contract you just deployed. As a parameter, we need to send it the challenge address;
+4. Call the withdraw function to get your ETH back;
 
+So, to solve this challange first run `npx hardhat compile` to compile the contract. Then, add the required information to the code and run
+`npx hardhat run scripts/lottery/guessTheNewNumber.js --network ropsten`
