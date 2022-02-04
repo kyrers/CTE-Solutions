@@ -11,7 +11,7 @@ async function main() {
     console.log("Solver Contract address:", SolverContract.address);
 
     //The contract address - Just copy it from the CTE challenge page
-    const challengeAddress = ethers.utils.getAddress("0xB413D13aeeB0197BD76daE6EBe1B42DDc97Adf39");
+    const challengeAddress = ethers.utils.getAddress("0x940DfB6f15d141Dfa3a7257BA522e57a28417152");
 
     //Send the transaction
     let tx = await SolverContract.guess(challengeAddress, {value: ethers.utils.parseEther("1")});

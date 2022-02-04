@@ -2,22 +2,10 @@
 
 pragma solidity ^0.8.11;
 
-/// @title The original challenge contract
+/// @title Interface for the original challenge contract
 /// @notice Only has the functions we need
-/// @dev Implemented using the latest solidity version, hence the differences from the original.
-contract GuessTheNewNumberChallenge {
-    constructor() payable {
-        require(msg.value == 1 ether);
-    }
-
-    function guess(uint8 n) public payable {
-        require(msg.value == 1 ether);
-        uint8 answer = uint8(uint(keccak256(abi.encodePacked(blockhash(block.number - 1), block.timestamp))));
-
-        if (n == answer) {
-            payable(msg.sender).transfer(2 ether);
-        }
-    }
+interface GuessTheNewNumberChallenge {
+    function guess(uint8 n) external payable;
 }
 
 /// @title The challenge solver

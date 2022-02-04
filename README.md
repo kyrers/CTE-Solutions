@@ -34,7 +34,7 @@ So, to solve this challenge just add the required information to the code and ru
 This is almost equal to the previous challenge.
 In the code, you will find the script `guessTheSecretNumber.js`. The code has comments explaining what each line does. Still, here is what we need to do:
 1. Do step 1 and 2 from the previous challenge;
-2. This time we only have the hash of the number we need to send to the `guess()` function. We need to figure out the number by running an loop, hashing the current loop counter value and then check if the hash matches. You probably saw that the `guess()` function takes an `uint8` as a parameter. This tells us that the number is less than 256, because the `uint8` max value is `2⁸-1 = 255`;
+2. This time we only have the hash of the number we need to send to the `guess()` function. We need to figure out the number by running a loop, hashing the current loop counter value and then check if the hash matches. You probably saw that the `guess()` function takes an `uint8` as a parameter. This tells us that the number is less than 256, because the `uint8` max value is `2⁸-1 = 255`;
 3. When we have the correct number, we just need to call the `guess()` function and send 1 ETH to it again.
 
 So, to solve this challenge just add the required information to the code and run `npx hardhat run scripts/lottery/guessTheSecretNumber.js --network ropsten`.
@@ -68,7 +68,7 @@ So, to solve this challenge just add the required information to the code and ru
 
 ### Guess the New Number
 This challenge gets a little bit trickier because the answer is calculated when we call the guess function.
-One approach to solve this challenge is to create a contract that computes the answer and call the challenge `guess()` function in the same block. This way, our answer is always correct. You will find the contract in `contracts/guessTheNewNumberSolver.sol`.
+One approach to solve this challenge is to create a contract that computes the answer and call the challenge `guess()` function in the same block. This way, our answer is always correct. You will find the contract in `contracts/GuessTheNewNumberSolver.sol`.
 Once again, the code is commented and explained. Still, here are the steps needed:
 1. Look at the contract and understand what it is doing. The contract has comments explaining everything.
 2. We need to deploy the contract. User your account so you can get your ETH back later, after solving the challenge;
@@ -76,4 +76,20 @@ Once again, the code is commented and explained. Still, here are the steps neede
 4. Call the withdraw function to get your ETH back;
 
 So, to solve this challange first run `npx hardhat compile` to compile the contract. Then, add the required information to the code and run
-`npx hardhat run scripts/lottery/guessTheNewNumber.js --network ropsten`.
+`npx hardhat run scripts/lottery/deployGuessTheNewNumberSolver.js --network ropsten`.
+
+### Predict the Future
+This challenge gets even trickier, because you have to lock in your guess before an answer is calculated.
+Luckily for us, we know the answer is between 0 and 9, because we `mod` the calculated `uint8` by 10.
+However, knowing this isn't enough. The key to solving this challenge is settling in the correct block.
+So, one approach to solve this challenge is to create a contract that locks a guess between 0 and 9. Then, we repeatedly call the `predict()` function of our contract until it determines that settling on the current block will produce the result that matches our locked guess. 
+You will find the contract in `contracts/PredictTheFutureSolver.sol`.
+Once again, the code is commented and explained. Still, here are the steps needed:
+1. Look at the contract and understand what it is doing. The contract has comments explaining everything.
+2. We need to deploy the contract. User your account so you can get your ETH back later, after solving the challenge;
+3. Call the `lockGuess()` function of the contract you just deployed. As a parameter, we need to send it the our guess;
+4. Call the predict function until it determines that settling will produce the result we guessed;
+5. Call the withdraw function to get your ETH back;
+
+So, to solve this challange first run `npx hardhat compile` to compile the contract. Then, add the required information to the code and run
+`npx hardhat run scripts/lottery/deployPredictTheFutureSolver.js --network ropsten`.
