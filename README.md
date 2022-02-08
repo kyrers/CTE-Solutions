@@ -93,3 +93,20 @@ Once again, the code is commented and explained. Still, here are the steps neede
 
 So, to solve this challange first run `npx hardhat compile` to compile the contract. Then, add the required information to the code and run
 `npx hardhat run scripts/lottery/deployPredictTheFutureSolver.js --network ropsten`.
+
+### Predict the Future Block Hash
+At first, this challenge may seem like a more complicated version of the previous one. However, it is not.
+Looking at the contract, you'll see that the solution is determined by calculating the blockhash of the block you locked your guess in + 1. 
+It may seem that this will require a tremendous amount of luck to guess correctly. However, what you should do first is to go to the solidity documentation and
+read about the blockhash function. Do it. 
+You'll hopefully see that it returns the hash of the last 256 blocks. For earlier blocks it will return 0 - this is how we solve the challenge!
+We simply lock our guess that the hash will be 0, then we get the block number our transaction was included in, wait 257 blocks and settle. It will return 0 and we will solve the challenge.
+Once again, the code is commented and explained. Still, here are the steps needed:
+1. Get the contract abi and address;
+2. Get the private key of the ropsten account you are using to interact with Capture The Ether. Otherwise, you can't pass the challenge as CTE doesn't know who you are;
+3. Get the contract and connect with it using your account;
+4. Lock your guess. Remember, guess 0.
+5. Wait 257 blocks. This will take some time. Go rest a little bit :)
+6. Settle and get your ETH back;
+
+So, to solve this challange add the required information to the code and run `npx hardhat run scripts/lottery/predictTheFutureBlockHash.js --network ropsten`.
