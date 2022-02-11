@@ -7,6 +7,8 @@ The `hardhat.config.js` file has a template for ropsten network interaction.
 
 [Lottery challenges;](#lottery)
 
+[Math challenges;](#math)
+
 ## WARMUP
 
 ### Call Me/Set Nickname
@@ -110,3 +112,22 @@ Once again, the code is commented and explained. Still, here are the steps neede
 6. Settle and get your ETH back;
 
 So, to solve this challange add the required information to the code and run `npx hardhat run scripts/lottery/predictTheFutureBlockHash.js --network ropsten`.
+
+## MATH
+
+### Token Sale
+Looking at the contract, it may seem like everything is correct. 
+However, if you look closely, you'll see that this contract does not implement SafeMath. Remember, SafeMath is implemented on the language level since solidity version 0.8. This challenge uses an older version, so there's the possibility of overflows. This is how we game the contract.
+If you look at the buy function, `require(msg.value == numTokens * PRICE_PER_TOKEN)` has the potential to overflow. Overflowing here would allow us to get a gigantic amount of tokens for a low price. We then sell 1 token for 1 ether, making a profit on the way and leaving the contract with a balance < 1, which is the required condition for us to solve the challenge.
+Once again, the code is commented and explained. Still, here are the steps needed:
+1. Get the contract abi and address;
+2. Get the private key of the ropsten account you are using to interact with Capture The Ether. Otherwise, you can't pass the challenge as CTE doesn't know who you are;
+3. Get the contract and connect with it using your account;
+4. Determine the amount of tokens to send to cause an overflow;
+5. Determine the amount of ether to send;
+6. Buy our tokens and wait for them to arrive;
+7. Sell 1 token;
+8. Profit;
+
+To keep this description short, steps 4 and 5 are detailed in the `tokenSale.js` script. Take a look.
+So, to solve this challange add the required information to the code and run `npx hardhat run scripts/math/tokenSale.js --network ropsten`.
