@@ -131,3 +131,21 @@ Once again, the code is commented and explained. Still, here are the steps neede
 
 To keep this description short, steps 4 and 5 are detailed in the `tokenSale.js` script. Take a look.
 So, to solve this challange add the required information to the code and run `npx hardhat run scripts/math/tokenSale.js --network ropsten`.
+
+### Token Whale
+Looking at this contract, you'll hopefully notice that, once again, it is subject to over and underflows.
+However, this is part of the solution. Not all of it.
+If you look at the `_transfer` function, it spends `msg.sender` tokens instead of tokes from the `from` address passed to the `transferFrom` function.
+This means that, if we succesfully call `transferFrom` from an account with 0 tokens, `balanceOf[msg.sender] -= value` will underflow, causing said account to receive a gigantic amount of tokens - 2**256 - 1 to be exact.
+After that, all we need is to send 1000000 tokens from the helper account to our account, and we'll have successfully solved the challenge.
+You may be thinking "Why do I need a second account? Couldn't I do this just using my account?". You couldn't. You'd never pass this check `require(balanceOf[from] >= value)`, as you'd need value to be 1001 to cause and underflow.
+Once again, the code is commented and explained. Still, here are the steps needed:
+1. Get the contract abi and address;
+2. Get the private key of the ropsten account you are using to interact with Capture The Ether. Otherwise, you can't pass the challenge as CTE doesn't know who you are;
+3. Get a second ropsten account;
+4. Approve the second account to spend funds from your account. Sign this transaction using your main account;
+5. Transfer 1 token from your main account, to that same account. Sign this transaction using the second account. This will cause the underflow and give the second account an enormous amount of tokens;
+6. Send the required 1000000 tokens from the second account back to your main account. Sign this transaction using the second account.
+7. Wait for them to arrive, and you'll have solved the challenge.
+
+So, to solve this challange add the required information to the code and run `npx hardhat run scripts/math/tokenWhale.js --network ropsten`.
