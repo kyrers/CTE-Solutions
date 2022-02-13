@@ -149,3 +149,21 @@ Once again, the code is commented and explained. Still, here are the steps neede
 7. Wait for them to arrive, and you'll have solved the challenge.
 
 So, to solve this challange add the required information to the code and run `npx hardhat run scripts/math/tokenWhale.js --network ropsten`.
+
+### Retirement fund
+Looking at this contract, you'll hopefully notice that, once again, it is subject to over and underflows.
+However, this is part of the solution. Not all of it.
+If you look at the contract, you'll see that `withdraw` checks that `msg.sender == owner`, since the `owner` is the CTE factory, this function is of no use to us. Meaning, that our solution can only make use of the `collectPenalty` function.
+As we've established, the contract is subject to over and underflows, meaning that `uint256 withdrawn = startBalance - address(this).balance;` can be underflowed, allowing us to drain all the ETH the contract has.
+To achieve this, `address(this).balance` has to be > 1, which in turn means that we'll have to find away to add some ether to the contract.
+The contract has no payable functions, so how can we send ether to the contract? If you look through the Ethereum documentation, you'll hopefully realize that the easiest way to do this is to self destruct another contract that as some ether in it, and send that contract ETH to the CTE challenge contract.
+Once again, the code is commented and explained. Still, here are the steps needed:
+1. Get the contract abi and address;
+2. Get the private key of the ropsten account you are using to interact with Capture The Ether. Otherwise, you can't pass the challenge as CTE doesn't know who you are;
+3. Get the contract and connect with it using your account;
+4. Deploy our helper contract. Send 1 eth as the msg.value. Don't forget to add the challenge address to the contract kill function;
+5. Destroy our helper contract;
+6. Call the challenge contract `collectPenalty` function;
+7. Wait for challenge contract to be drained and you'll have solved the challenge.
+
+So, to solve this challange add the required information to the code and run `npx hardhat run scripts/math/deployRetirementFundHelper.js --network ropsten`.
