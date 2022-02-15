@@ -169,7 +169,7 @@ Once again, the code is commented and explained. Still, here are the steps neede
 So, to solve this challange add the required information to the code and run `npx hardhat run scripts/math/deployRetirementFundHelper.js --network ropsten`.
 
 ### Mapping
-To solve this contract, we need to somehow set `isComplete` to true, or 1.
+To solve this challenge, we need to somehow set `isComplete` to true, or 1.
 First, you should read the Ethereum docs to understand how contract storage works. You'll hopefully reach the conclusion that `isComplete` is at `slot 0`. Then, `slot 1` has the `map[]` length. From the documentation, we can also gather that: `keccak256(1)` has the `map[0]` value, `keccak256(1) + 1` has the `map[1]` value and so forth. This is because the contract array is a dynamic size array, so the EVM reserves one slot to store the array length.
 From this, we can expect that if we set the map length to 2**256 - 1, the slot that contains the `isComplete` value will be occupied by the array, allowing us to modify it, if we know the corresponding storage address. Since we know that `map[0]` is at `keccak256(1)`, we also know that `map[isComplete] = 2**256 - keccack256(1)`.
 Once again, the code is commented and explained. Still, here are the steps needed:
@@ -181,3 +181,20 @@ Once again, the code is commented and explained. Still, here are the steps neede
 6. Change it to 1 (true);
 
 So, to solve this challange add the required information to the code and run `npx hardhat run scripts/math/mapping.js --network ropsten`.
+
+### Donation
+Looking at the contract, you'll hopefully notice two things almost immediately: the `donate` function calculates `scale` wrong, as it results in `10**36` since `1 ether == 10**18` already, and that we'll need to somehow call `withdraw` to drain the contract.
+Taking a deeper look, the `withdraw` function requires us to be the contract `owner`, so we know what our goal is: become the contract owner.
+If you read the storage layout docs in the previous challenge you'll remember that struct and array data use their own slots. Since the contract struct is only initialized when the `donate` function is called, we can assume that slot 0 has the `Donation[]` size and that slot 1 has the `owner` address. So, we must write to slot 1 of the contract storage, but how?
+This is where the `donate` function is wrong again. It declares `Donation donation` without using either the `memory` or `storage` keywords, which means that this is just an uninitialized pointer to the contract storage. Since the struct has to `uint256` values, `etherAmount` will write to slot 1, where the `owner` address is stored!
+All we need to do is determine the `uint256` value of our address and send that as the `etherAmount`, with the needed `msg.value` to pass the `require` check.
+Once again, the code is commented and explained. Still, here are the steps needed:
+1. Get the contract abi and address;
+2. Get the private key of the ropsten account you are using to interact with Capture The Ether. Otherwise, you can't pass the challenge as CTE doesn't know who you are;
+3. Get the contract and connect with it using your account;
+4. Determine the `uint256` value of our address;
+5. Calculate the needed `msg.value`;
+6. Make the donation;
+7. Withdraw the eth;
+
+So, to solve this challange add the required information to the code and run `npx hardhat run scripts/math/donation.js --network ropsten`.
