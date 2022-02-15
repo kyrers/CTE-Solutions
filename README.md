@@ -167,3 +167,17 @@ Once again, the code is commented and explained. Still, here are the steps neede
 7. Wait for challenge contract to be drained and you'll have solved the challenge.
 
 So, to solve this challange add the required information to the code and run `npx hardhat run scripts/math/deployRetirementFundHelper.js --network ropsten`.
+
+### Mapping
+To solve this contract, we need to somehow set `isComplete` to true, or 1.
+First, you should read the Ethereum docs to understand how contract storage works. You'll hopefully reach the conclusion that `isComplete` is at `slot 0`. Then, `slot 1` has the `map[]` length. From the documentation, we can also gather that: `keccak256(1)` has the `map[0]` value, `keccak256(1) + 1` has the `map[1]` value and so forth. This is because the contract array is a dynamic size array, so the EVM reserves one slot to store the array length.
+From this, we can expect that if we set the map length to 2**256 - 1, the slot that contains the `isComplete` value will be occupied by the array, allowing us to modify it, if we know the corresponding storage address. Since we know that `map[0]` is at `keccak256(1)`, we also know that `map[isComplete] = 2**256 - keccack256(1)`.
+Once again, the code is commented and explained. Still, here are the steps needed:
+1. Get the contract abi and address;
+2. Get the private key of the ropsten account you are using to interact with Capture The Ether. Otherwise, you can't pass the challenge as CTE doesn't know who you are;
+3. Get the contract and connect with it using your account;
+4. Expand the array bounds to occupy the `isComplete` slot;
+5. Determine the storage address of the `isComplete` value;
+6. Change it to 1 (true);
+
+So, to solve this challange add the required information to the code and run `npx hardhat run scripts/math/mapping.js --network ropsten`.
