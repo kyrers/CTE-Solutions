@@ -214,10 +214,12 @@ There are three things we need to pay attention while executing the two contribu
 
 At first glance, we may assume that, after these steps, calling `withdraw(2)` would drain the contract. However, this transaction would fail. 
 Since `queue.push` increments the `queue.length` before actually pushing the contribution, `contribution.amount = msg.value` will be incremented too. Visualize it this way:
+    
     - Contribution 0 (made by CTE): contribution.amount == msg.value == 1 ETH;
     - Contribution 1 (us): contribution.amount == msg.value == 1 wei + `queue.push` == 2 wei;
     - Contribution 2 (us): contribution.amount == msg.value == 2 wei + `queue.push` == 3 wei;
     - Contract total == 1.00...03 ETH, Contributions total == 1.00...05 ETH.
+    
 Hence, the transaction will fail until we add 2 wei to the contract, because we're trying to withdraw more ETH than the contract has. This can be done by taking a page out of the RetirementFund challenge. Just create a contract that receives 2 wei on deploy, and then self destruct said contract, sending the 2 wei to our challenge contract.
 After that, call `withdraw(2)` and we win!
 
