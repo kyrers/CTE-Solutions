@@ -201,7 +201,9 @@ So, to solve this challange add the required information to the code and run `np
 
 ### Fifty Years
 This is the challenge that awards most points for a reason. It requires an orderly combination of transactions, with the intent to exploit the contract using the techniques we've used in the previous challenges.
+
 First, let's try to determine our goal. Looking at the `withdraw` function, particularly the second `require` check, we can see that we need to send an `index` for a contribution that has an `unlockTimestamp` in the past and corresponds to the last contribution made, so we drain all the contributions. This is our goal. Now, how do we do this?
+
 It should be clear that the `upsert` function is key. If we look through its code, we can identify two potential issues: `require(timestamp >= queue[queue.length - 1].unlockTimestamp + 1 days)` is subject to overflows, and the `else` statement relies on a previous declaration of `contribution`, which makes it an uninitialized storage pointer, which allows us to access storage slots 0 (`queue.length`) and 1 (`head`) (remember this from the previous challenge?).
 Knowing this, we can determine two steps needed: 
  - Call `upsert` once with a new contribution designed to prepare an overflow of the `timestamp` when we make the second contribution, allowing the second contribution to have `timestamp = 0`. Since the `contribution.unlockTimestamp = timestamp` writes to the `head` storage slot, after this first contribution `head` will have a gigantic value.
@@ -210,7 +212,8 @@ Knowing this, we can determine two steps needed:
 This will total, 3 contributions (adding to the one that is made when we begin the challenge on CTE). 
 There are three things we need to pay attention while executing the two contributions:
 - Time units are parsed to seconds, so we need to prepare the overflow taking that into account;
-- `queue.push` increments the `queue.length` before actually inserting the contribution. We've determined that the `queue.length` will be manipulated by the line `contribution.amount = msg.value`. This means that if we want to keep an accurate `queue.length` value, we need to be wary of the `msg.value` we send with each `upsert` call. We know that before our first `upsert` call the `queue.length` is 1, because on contribution was made when we begun the challenge. Since ether units are handled in wei, we need to send 1 wei in the first contribution because, even though the line `contribution.amount = msg.value` will mantain the `queue.length` at 1 (when it's actually 2, since this is the second contribution made), the line `queue.push(contribution)` will increment it by 1, which will give us the correct `queue.length` of 2. We follow the same logic for the second `upsert` call and send 2 wei, since 2 + 1 = 3, which by then will be the correct `queue.length`.
+- Ether units are handled in wei, so if we send ETH to the contract the actual `queue.length` will be `x ETH * 10**18`. So we need to send wei, not ether as the `msg.value`;
+- `queue.push` increments the `queue.length` before actually inserting the contribution. We've determined that the `queue.length` will be manipulated by the line `contribution.amount = msg.value`. This means that if we want to keep an accurate `queue.length` value, we need to be wary of the `msg.value` we send with each `upsert` call. We know that before our first `upsert` call the `queue.length` is 1, because one contribution was made when we begun the challenge. However, we need to send 1 wei in the first contribution because, even though the line `contribution.amount = msg.value` will mantain the `queue.length` at 1 (when it's actually 2, since this is the second contribution made), the line `queue.push(contribution)` will increment it by 1, which will give us the correct `queue.length` of 2. We follow the same logic for the second `upsert` call and send 2 wei, since 2 + 1 = 3, which by then will be the correct `queue.length`.
 
 At first glance, we may assume that, after these steps, calling `withdraw(2)` would drain the contract. However, this transaction would fail. 
 Since `queue.push` increments the `queue.length` before actually pushing the contribution, `contribution.amount = msg.value` will be incremented too. Visualize it this way:
@@ -219,7 +222,7 @@ Since `queue.push` increments the `queue.length` before actually pushing the con
     - Contribution 1 (us): contribution.amount == msg.value == 1 wei + `queue.push` == 2 wei;
     - Contribution 2 (us): contribution.amount == msg.value == 2 wei + `queue.push` == 3 wei;
     - Contract total == 1.00...03 ETH, Contributions total == 1.00...05 ETH.
-    
+
 Hence, the transaction will fail until we add 2 wei to the contract, because we're trying to withdraw more ETH than the contract has. This can be done by taking a page out of the RetirementFund challenge. Just create a contract that receives 2 wei on deploy, and then self destruct said contract, sending the 2 wei to our challenge contract.
 After that, call `withdraw(2)` and we win!
 
