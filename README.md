@@ -206,6 +206,7 @@ It should be clear that the `upsert` function is key. If we look through its cod
 Knowing this, we can determine two steps needed: 
  - Call `upsert` once with a new contribution designed to prepare an overflow of the `timestamp` when we make the second contribution, allowing the second contribution to have `timestamp = 0`. Since the `contribution.unlockTimestamp = timestamp` writes to the `head` storage slot, after this first contribution `head` will have a gigantic value.
  - Make another `upsert` call that resets `head` to 0, while also having an `unlockTimestamp == 0`, which will work, because we've prepared the overflow in the first `upsert` call. 
+
 This will total, 3 contributions (adding to the one that is made when we begin the challenge on CTE). 
 There are three things we need to pay attention while executing the two contributions:
 - Time units are parsed to seconds, so we need to prepare the overflow taking that into account;
