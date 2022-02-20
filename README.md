@@ -9,7 +9,7 @@ The `hardhat.config.js` file has a template for ropsten network interaction.
 
 [Math challenges;](#math)
 
-[Account challenges;] (#accounts)
+[Account challenges;](#accounts)
 
 ## WARMUP
 
