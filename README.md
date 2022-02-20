@@ -9,6 +9,8 @@ The `hardhat.config.js` file has a template for ropsten network interaction.
 
 [Math challenges;](#math)
 
+[Account challenges;] (#accounts)
+
 ## WARMUP
 
 ### Call Me/Set Nickname
@@ -237,3 +239,29 @@ Once again, the code is commented and explained. Still, here are the steps neede
 8. Call `withdraw(2)`;
 
 So, to solve this challange add the required information to the code and run `npx hardhat run scripts/math/deployFiftyYearsHelper.js --network ropsten`. This will deploy our helper contract and run the transactions in order. Don't forget to add your challenge contract address to the `kill` function before deploying.
+
+## ACCOUNTS
+
+### Fuzzy Identity
+To solve this challenge we need successfully authenticate as "smarx". The challenge gives us the conditions we need to meet:
+1. Have a contract that returns "smarx" when the function `name` is called;
+2. That same contract must be deployed at an address that ends with `badc0de`.
+
+Step 1 is pretty simple, we just need a function called `name` that returns `bytes32("smarx")`.
+As for step 2, the EVM now has an opcode called `CREATE2` that allows us to deploy a contract to a pre-computed address, provided we give it the contract bytecode and an `uint256 salt` to use. This is probably not what the author had in mind, but we should take advantage of improvements to the EVM.
+
+To achieve step 2, take a look at [this repo](https://github.com/kyrers/contract-factory). It allows you to deploy a factory contract that will use the `CREATE2` opcode to deploy our `FuzzyIdentityHelper` contract to an address that ends with `badc0de`, provided we send the correct salt along with the `FuzzyIdentityHelper` bytecode. This will allow us to solve the challenge. The repository contains instructions on how it should be done.
+
+Our `FuzzyIdentityHelper` contract will have our challenge contract address hardcoded, although it's entirely possible to deploy bytecode with constructor params. It's just that this way is easier and does not require you to change the factory repo code.
+
+So, to recap, here are the steps needed:
+1. Deploy the factory contract to the Ropsten network;
+2. Get our `FuzzyIdentityHelper` contract bytecode;
+3. Determine the salt to use to deploy it to an address ending with `badc0de`. When introducing the needed information in the `findHash.js` script, remember that the `deployerAddress` is the address of the factory contract you deployed on step 1, not your own;
+4. Use the factory contract to deploy our `FuzzyIdentityHelper` to the address determined in step 3;
+5. Get the `FuzzyIdentityHelper` contract we just deployed;
+6. Call the `FuzzyIndentityHelper` `authenticate` function;
+7. Win;
+
+So, to solve this challenge first deploy the factory contract. Then, using that same repository, determine which salt to use. 
+After that, run `nxp hardhat run scripts/accounts/deployFuzzyIdentityHelper.js --network ropsten`, which will use the factory to deploy our `FuzzyIdentityHelper`, which will authenticate us.

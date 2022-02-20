@@ -11,7 +11,7 @@ contract FiftyYearsHelper {
         require(msg.value == 2 wei);
     }
 
-    // Destroy the contract and send its balance to the CTE challenge contract
+    /// @notice Destroy the contract and send its balance to the CTE challenge contract
     function kill() public {
         selfdestruct(payable(address(0x91Efe024ad7476A147328201Ff9aD093ca495819)));
     }
