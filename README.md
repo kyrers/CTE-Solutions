@@ -265,3 +265,28 @@ So, to recap, here are the steps needed:
 
 So, to solve this challenge first deploy the factory contract. Then, using that same repository, determine which salt to use. 
 After that, run `nxp hardhat run scripts/accounts/deployFuzzyIdentityHelper.js --network ropsten`, which will use the factory to deploy our `FuzzyIdentityHelper`, which will authenticate us.
+
+### Public Key
+This challenge isn't about hacking a smart contract. It's about understanding how signatures work. So, you should read the docs before solving this.
+
+A couple of important things to know:
+
+- Ethereum signatures use the ECDSA algorithm. They consist of two integers `r,s` and `v` which ethereum uses as a recover identifier;
+- What is actually signed is the serialized transaction hash, according to the current docs;
+- `recoverPublicKey` come with a prefix, such as `0x04` which means that both `r` and `s` follow;
+
+Now, we will actually need some help from etherscan to begin with. The challenge contract contains the owner address, but to get its public key, we need a transaction signed by said address. If you search ropsten etherscan for the address you'll find an outgoing transaction, just what we need.
+
+So, here's what's needed to solve this challenge:
+
+1. Get the challenge owner outgoing transaction hash from etherscan;
+2. Get the transaction object;
+3. Reconstruct both the transaction data and signature objects;
+4. Serialize the transaction data object;
+5. Hash it;
+6. Recover the public key using both the transaction data hash and the signature object;
+7. Format it;
+8. Get the challenge contract;
+9. Authenticate yourself.
+
+So, to solve this challenge fill the required info, and run `npx hardhat run scripts/accounts/publicKey.js --network ropsten`.
