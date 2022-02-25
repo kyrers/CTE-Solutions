@@ -290,3 +290,35 @@ So, here's what's needed to solve this challenge:
 9. Authenticate yourself.
 
 So, to solve this challenge fill the required info, and run `npx hardhat run scripts/accounts/publicKey.js --network ropsten`.
+
+
+### Account Takeover
+This challenge is actually harder than the scoring suggests. It implies having knowledge about how ECDSA works and how to exploit its vulnerabilities.
+The math behind this is beyond the scope of this repo and, to be honest, I am not knowledgeable enough to explain it. Here's a [stackoverflow discussion](https://bitcoin.stackexchange.com/questions/35848/recovering-private-key-when-someone-uses-the-same-k-twice-in-ecdsa-signatures) that should get you started.
+
+As a basic overview, ECDSA signatures can be exploited with the goal of recovering private keys when the same nonce is used to sign two transactions.
+We've determined in the previous challenge that a signature object consists of `r`, `s`, and `v` values. If two transactions have the same `r`, it means the same nonce was used.
+
+ECDSA signatures are determined using `s = k⁻¹ (z + r * privateKey) (mod p)`, where:
+    - `k` is the nonce;
+    - `z` is the transaction hash;
+    - `r` is the `r` value of the signature object. This is what must be common between two transactions for this exploit to work;
+    - `(mod p)` is a congruence modulo where `p` is a constant.
+
+First we need to determine all the possible `k` values. Then, we determine the private key that match those `k`'s and find out which one matches to our account to hack address.
+After that, it's a matter of connecting to it using our new wallet and authenticating ourselves.
+
+Note that everybody solving this challenge uses the same account, so if you're authenticate transaction is failing, it may be because the account has no ETH. Check on ropsten on etherscan and send it some if needed.
+
+So, here are the steps:
+
+1. Find two transactions sent by the account to hack that have the same `r` for the signature. This is hard to find because there are so many, so I found out which one were by searching different solutions to this challenge and kept them in the `accountTakeover.js` script so you don't have to;
+2. Calculate the `s` and `z` values needed to determine our possible `k`'s;
+3. Determine our possible `k`'s and the matching private keys;
+4. Determine which private key corresponds to the address we need;
+5. Get the challenge contract and connect to it using the hacked account wallet;
+6. Authenticate ourselves;
+
+Again, I advise you to research how ECDSA allow for private key recovery if the same nonce is used twice before solving this. And if you understand the math, feel free to hit me up and explaining it to me :)
+
+So, to solve this challenge run `npx hardhat run scripts/accounts/accountTakeover.js --network ropsten`.
