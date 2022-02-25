@@ -11,6 +11,8 @@ The `hardhat.config.js` file has a template for ropsten network interaction.
 
 [Account challenges;](#accounts)
 
+[Miscellaneous challenges;](#miscellaneous)
+
 ## WARMUP
 
 ### Call Me/Set Nickname
@@ -322,3 +324,22 @@ So, here are the steps:
 Again, I advise you to research how ECDSA allow for private key recovery if the same nonce is used twice before solving this. And if you understand the math, feel free to hit me up and explaining it to me :)
 
 So, to solve this challenge run `npx hardhat run scripts/accounts/accountTakeover.js --network ropsten`.
+
+## Miscellaneous
+
+### Assume Ownership
+This challenge might be the easiest.
+
+Solidity now allows you to use the `constructor` keyword so constructors stand out. However, the challenge contract doesn't use that keyword.
+If you look at the code you'll notice a severe error: the function that's meant to be the constructor is misspelled as `AssumeOwmershipChallenge`, allowing anyone to call it and become the owner.
+
+There's not much to this challenge, just:
+
+1. Get the contract abi and address;
+2. Get the private key of the ropsten account you are using to interact with Capture The Ether. Otherwise, you can't pass the challenge as CTE doesn't know who you are;
+3. Get the contract and connect with it using your account;
+4. Call `AssumeOwmershipChallenge`;
+5. Call `authenticate`;
+6. Win;
+
+So, to solve this challenge add the correct variables and run `npx hardhat run scripts/miscellaneous/assumeOwnership.js --network ropsten`.
