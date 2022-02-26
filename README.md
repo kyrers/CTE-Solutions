@@ -343,3 +343,30 @@ There's not much to this challenge, just:
 6. Win;
 
 So, to solve this challenge add the correct variables and run `npx hardhat run scripts/miscellaneous/assumeOwnership.js --network ropsten`.
+
+### Token Bank
+This challenge involves two contracts: `TokenBankChallenge` which acts as a bank, as the name suggests. It deploys the `SimpleERC223Token` and assigns half to the CTE challenge factory, given that it created the `TokenBankChallenge` contract, and half to the player, meaning us. Our goal is to withdraw all 1000000 tokens, not just our 500000.
+
+It's important to know that one difference between the `ERC20` and `ERC223` token standards is that the `ERC223` notifies the recipient of a transfer by calling the `tokenFallback` function in case it is a contract.
+
+Now, as you've probably guessed, the `TokenBankChallenge` `withdraw` function must be used. If you look through the function, you'll see that it is vulnerable to reentrancy attacks, as it only updates the `msg.sender` balance after sending it the funds.
+
+So, even though this looks like a lot of code, the solution isn't all that complicated. We just need to create a contract that has a `tokenFallback` function that keeps withdrawing until the contract is empty. This `tokenFallback` function will be called by the `SimpleERC223Token` contract on each withdrawal, allowing us to check if there are tokens left and keep withdrawing until it is empty.
+
+Even though it is obvious, you must not forget that you can only withdraw funds that you have, so before initiating our attack we'll need to send our tokens to the attack contract and deposit them in the bank again.
+
+So, here are the steps needed:
+
+1. Get the bank contract abi and address;
+2. Get the token contract abi;
+3. Deploy the `TokenBankHelper` contract;
+4. Get the bank contract;
+5. Get the token contract that the challenge bank is using;
+6. Withdraw your 500000 tokens;
+7. Send your 500000 tokens to the `TokenBankHelper`;
+8. Deposit them in the bank;
+9. Initiate the attack by withdrawing 500000;
+10. Wait until the `TokenBank` contract is empty;
+11. Win;
+
+So, to solve this challenge, add the required information and run `npx hardhat run scripts/miscellaneous/deployTokenBankHelper.js --network ropsten`.
